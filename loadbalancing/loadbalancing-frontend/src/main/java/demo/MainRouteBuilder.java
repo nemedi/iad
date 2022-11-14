@@ -29,19 +29,21 @@ public class MainRouteBuilder extends RouteBuilder {
 	public void configure() throws Exception {
 		var component = getContext().getComponent("websocket", WebsocketComponent.class);
 		component.setPort(port);
-		component.setStaticResources("classpath:.");
-		from("websocket:service")
+		
+		from("file:data/in")
 		.convertBodyTo(String.class)
-		.log("Received: '${body}' from frontent.")
+		.setHeader("transformation").simple("${header.fileName}")
+		.log("Invoking transformation '${header.transformation}'.")
 		.process(debug())
 		.loadBalance()
 		.roundRobin()
 		.to(backends);
-		from("file:data")
+		
+		from("websocket:reply")
 		.convertBodyTo(String.class)
-		.log("Received: '${body}' from backend.")
+		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}'.")
 		.process(debug())
-		.to("websocket:service?sendToAll=true");
+		.toD("file:data/out?fileName=${header.fileName}");
 	}
 	
 	private static Processor debug() {

@@ -3,40 +3,46 @@ services:
   backend1:
     image: loadbalancing-backend:latest
     volumes:
-      - ./data:/usr/share/loadbalancing-backend/data
+      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
     hostname: backend1.local
     network_mode: bridge
     ports:
       - "9001:8000"
     environment:
       - PORT=9090
-      - ID=Server1
+      - SERVER_ID=Server1
+      - FRONTEND_HOST=frontend.local
+      - FRONTEND_PORT=8080
   backend2:
     image: loadbalancing-backend:latest
     volumes:
-      - ./data:/usr/share/loadbalancing-backend/data
+      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
     hostname: backend2.local
     network_mode: bridge
     ports:
       - "9002:8000"
     environment:
       - PORT=9090
-      - ID=Server2
+      - SERVER_ID=Server2
+      - FRONTEND_HOST=frontend.local
+      - FRONTEND_PORT=8080      
   backend3:
     image: loadbalancing-backend:latest
     volumes:
-      - ./data:/usr/share/loadbalancing-backend/data
+      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
     hostname: backend3.local
     network_mode: bridge
     ports:
       - "9003:8000"
     environment:
       - PORT=9090
-      - ID=Server3
+      - SERVER_ID=Server3
+      - FRONTEND_HOST=frontend.local
+      - FRONTEND_PORT=8080      
   frontend:
     image: loadbalancing-frontend:latest
     volumes:
-      - ./data:/usr/share/loadbalancing-backend/data
+      - ./runtime/data:/usr/share/loadbalancing-frontend/data
     hostname: frontend.local
     network_mode: bridge
     ports:

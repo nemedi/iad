@@ -6,7 +6,7 @@
 	<artifactId>loadbalancing-frontend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<camel.version>2.15.6</camel.version>
+		<camel.version>3.19.0</camel.version>
 		<jaxb.version>2.3.0</jaxb.version>
 		<java.version>11</java.version>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
@@ -14,33 +14,13 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>${jaxb.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-core</artifactId>
-			<version>${jaxb.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>${jaxb.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-mina2</artifactId>
-			<version>${camel.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-jetty</artifactId>
+			<artifactId>camel-main</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
@@ -50,13 +30,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-jackson</artifactId>
-			<version>${camel.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-script</artifactId>
-			<version>${camel.version}</version>
+			<artifactId>camel-mina2</artifactId>
+			<version>2.25.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

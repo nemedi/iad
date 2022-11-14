@@ -13,8 +13,7 @@ public class MainApplication {
 		int port = Integer.parseInt(args[0]);
 		String[] backends = Arrays.copyOfRange(args, 1, args.length);
 		Main main = new Main();
-		main.enableHangupSupport();
-		main.addRouteBuilder(new MainRouteBuilder(port, backends));
+		main.configure().addRoutesBuilder(new MainRouteBuilder(port, backends));
 		main.run();
 	}
 
