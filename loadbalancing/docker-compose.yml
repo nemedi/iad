@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  backend1:
+    image: loadbalancing-backend:latest
+    volumes:
+      - ./data:/usr/share/loadbalancing-backend/data
+    hostname: backend1.local
+    network_mode: bridge
+    ports:
+      - "9001:8000"
+    environment:
+      - PORT=9090
+      - ID=Server1
+  backend2:
+    image: loadbalancing-backend:latest
+    volumes:
+      - ./data:/usr/share/loadbalancing-backend/data
+    hostname: backend2.local
+    network_mode: bridge
+    ports:
+      - "9002:8000"
+    environment:
+      - PORT=9090
+      - ID=Server2
+  backend3:
+    image: loadbalancing-backend:latest
+    volumes:
+      - ./data:/usr/share/loadbalancing-backend/data
+    hostname: backend3.local
+    network_mode: bridge
+    ports:
+      - "9003:8000"
+    environment:
+      - PORT=9090
+      - ID=Server3
+  frontend:
+    image: loadbalancing-frontend:latest
+    volumes:
+      - ./data:/usr/share/loadbalancing-backend/data
+    hostname: frontend.local
+    network_mode: bridge
+    ports:
+      - "9090:8080"
+      - "9000:8000"
+    environment:
+      - PORT=8080
+      - BACKENDS="backend1.local:9090 backend2.local:9090 backend3.local:9090"
