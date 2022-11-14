@@ -46,7 +46,6 @@ services:
     hostname: frontend.local
     network_mode: bridge
     ports:
-      - "9090:8080"
       - "9000:8000"
     environment:
       - PORT=8080
