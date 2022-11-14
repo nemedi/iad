@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<title>Search City By Name</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$('#name').bind('change paste keyup', function() {
+				var name = $(this).val();
+				$.get('?name=' + name, function(data) {
+					var table = '<table>'
+							+ '<tr>'
+							+ '<td nowrap><b>Name</b></td>'
+							+ '<td nowrap><b>District</b></td>'
+							+ '<td nowrap aling="right"><b>Inhabitants</b></td>'
+							+ '</tr>';
+					$.each(JSON.parse(data), function(key, value){
+						table += '<tr>'
+							+ '<td>' + value.name + '</td>'
+							+ '<td>' + value.district + '</td>'
+							+ '<td>' + value.inhabitants + '</td>'
+							+ '</tr>';
+					});
+					table += '</table>';
+					$('#container').html(table);
+				});
+			});
+		});
+		</script>
+	</head>
+	<body>
+		City <input id="name">
+		<div id="container"></div>
+	</body>
+</html>

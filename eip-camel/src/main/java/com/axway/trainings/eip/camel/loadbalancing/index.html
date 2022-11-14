@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			setInterval("callService()", 1000)
+		});
+		function callService() {
+			$.get("service", function(response) {
+				  $("#container").append(response + '<br/>');
+			});
+		}
+		</script>
+	</head>
+	<body>
+		<div id="container"></div>
+	</body>
+</html>

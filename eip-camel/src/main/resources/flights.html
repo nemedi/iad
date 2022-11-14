@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<head>
+    <title>Flight Radar Example</title>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+	$(document).ready(function(){
+		var websocket = new WebSocket("ws://localhost:8080/flights");
+		websocket.onmessage = function(message) {
+			var html = '<table>'
+			$.map(JSON.parse(message.data), function(key, value) {
+				html += '<tr>'
+					+ '<td nobr>' + value + '</td>'
+					+ '<td align="right">' + key + '</td>'
+					+ '</tr>';
+			});
+			html += '</table>';
+			$('#container').html(html);
+		};
+	});
+    </script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+</html>
