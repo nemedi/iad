@@ -1,0 +1,2 @@
+subject: "Hello"
+message: "Hello {{first_name}} {{last_name}} from Camel!"
