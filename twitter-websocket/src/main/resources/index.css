@@ -1,0 +1,13 @@
+div {
+	border: none;
+}
+
+div#tweets {
+	clear: both;
+	width: 80em;
+	height: 60em;
+	overflow: auto;
+	background-color: #f0f0f0;
+	padding: 4px;
+	border: 1px solid black;
+}
