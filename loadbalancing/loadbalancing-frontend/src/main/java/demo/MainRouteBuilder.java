@@ -31,8 +31,8 @@ public class MainRouteBuilder extends RouteBuilder {
 		component.setPort(port);
 		
 		from("file:data/in")
-		.convertBodyTo(String.class)
 		.setHeader("transformation").simple("${header.fileName}")
+		.convertBodyTo(String.class)
 		.log("Invoking transformation '${header.transformation}'.")
 		.process(debug())
 		.loadBalance()

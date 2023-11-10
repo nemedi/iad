@@ -13,8 +13,9 @@ public class MainApplication {
 		String frontendHost = args[2];
 		int frontendPort = Integer.parseInt(args[3]);
 		Main main = new Main();
-		main.configure().addRoutesBuilder(new MainRouteBuilder(backendPort, serverId, frontendHost, frontendPort));
-		main.run();
+		main.addRouteBuilder(new MainRouteBuilder(backendPort, serverId, frontendHost, frontendPort));
+		main.start();
+		main.run(new String[] {});
 	}
 
 }
