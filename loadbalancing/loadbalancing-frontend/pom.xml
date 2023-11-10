@@ -7,7 +7,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<camel.version>2.25.4</camel.version>
-		<jaxb.version>2.3.0</jaxb.version>
 		<java.version>11</java.version>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
