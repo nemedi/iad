@@ -2,6 +2,7 @@ package loadbalancing;
 
 import java.util.Arrays;
 
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
 
 public class MainApplication {
@@ -13,7 +14,8 @@ public class MainApplication {
 		int port = Integer.parseInt(args[0]);
 		String[] backends = Arrays.copyOfRange(args, 1, args.length);
 		Main main = new Main();
-		main.addRouteBuilder(new MainRouteBuilder(port, backends));
+		RouteBuilder routeBuilder = new MainRouteBuilder(port, backends);
+		main.configure().addRoutesBuilder(routeBuilder);
 		main.start();
 		main.run(new String[] {});
 	}

@@ -61,7 +61,7 @@ public class Response {
 		String serverId = (String) body.get("serverId");
 		String transformation = (String) body.get("transformation");
 		String fileName = (String) body.get("fileName");
-		long timespan = (long) body.get("timespan");
+		long timespan = Long.parseLong(body.get("timespan").toString());
 		String payload = (String) body.get("payload");
 		return new Response(serverId, transformation, fileName, timespan, payload);
 	}

@@ -10,7 +10,6 @@ services:
     environment:
       - PORT=9090
       - SERVER_ID=Server1
-      - FRONTEND_HOST=frontend.local
       - FRONTEND_PORT=8080
   backend2:
     image: loadbalancing-backend:latest
@@ -22,8 +21,7 @@ services:
     environment:
       - PORT=9090
       - SERVER_ID=Server2
-      - FRONTEND_HOST=frontend.local
-      - FRONTEND_PORT=8080      
+      - FRONTEND_PORT=8080
   backend3:
     image: loadbalancing-backend:latest
     volumes:
@@ -34,8 +32,7 @@ services:
     environment:
       - PORT=9090
       - SERVER_ID=Server3
-      - FRONTEND_HOST=frontend.local
-      - FRONTEND_PORT=8080      
+      - FRONTEND_PORT=8080
   frontend:
     image: loadbalancing-frontend:latest
     volumes:

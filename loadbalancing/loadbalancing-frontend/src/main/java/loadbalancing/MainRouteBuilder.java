@@ -3,8 +3,8 @@ package loadbalancing;
 import java.text.MessageFormat;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.websocket.WebsocketComponent;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class MainRouteBuilder extends RouteBuilder {
@@ -22,27 +22,30 @@ public class MainRouteBuilder extends RouteBuilder {
 			if (backends[i].endsWith("\"")) {
 				backends[i] = backends[i].substring(0, backends[i].length() - 1);
 			}
-			this.backends[i] = MessageFormat.format("mina2:tcp://{0}?sync=false", this.backends[i]);
+			this.backends[i] = MessageFormat.format("mina:tcp://{0}?sync=false", this.backends[i]);
 		}
 	}
 
 	@Override
 	public void configure() throws Exception {
-		var component = getContext().getComponent("websocket", WebsocketComponent.class);
-		component.setPort(port);
+		onException(Throwable.class)
+		.log("${body}");
 		
 		from("file:./runtime/in")
 		.convertBodyTo(String.class)
-		.setHeader("transformation").method(getClass(), "getTransformation")
+		.setHeader("transformation").method(this, "getTransformation")
 		.bean(Request.class, "createRequest")
 		.log("Invoking transformation '${header.transformation}'.")
 		.marshal().json(JsonLibrary.Jackson)
+		.convertBodyTo(String.class)
+		.process(debug())
 		.loadBalance()
 		.roundRobin()
 		.to(backends);
 		
-		from("websocket:reply")
+		fromF("mina:tcp://0.0.0.0:%d", port)
 		.convertBodyTo(String.class)
+		.process(debug())
 		.unmarshal().json(JsonLibrary.Jackson)
 		.bean(Response.class, "extractResponse")
 		.setHeader("serverId").simple("${body.serverId}")
@@ -51,10 +54,10 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader("timespan").simple("${body.timespan}")
 		.setBody().simple("${body.payload}")
 		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}'.")
-		.toD("file:data/out?fileName=${header.fileName}");
+		.toD("file:./runtime/out?fileName=${header.fileName}");
 	}
 	
-	public static final String getTransformation(Exchange exchange) {
+	protected String getTransformation(Exchange exchange) {
 		String fileName = exchange.getIn().getHeader("CamelFileName", String.class);
 		int index = fileName.lastIndexOf('.');
 		if (index > 0) {
@@ -63,4 +66,9 @@ public class MainRouteBuilder extends RouteBuilder {
 		return fileName;
 	}
 	
+	protected Processor debug() {
+		return exchange -> {
+			System.out.println(exchange.getIn());
+		};
+	}
 }

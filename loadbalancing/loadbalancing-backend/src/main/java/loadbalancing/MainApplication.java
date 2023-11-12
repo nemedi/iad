@@ -1,19 +1,20 @@
 package loadbalancing;
 
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
 
 public class MainApplication {
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 4) {
+		if (args.length != 3) {
 			return;
 		}
 		int backendPort = Integer.parseInt(args[0]);
 		String serverId = args[1];
-		String frontendHost = args[2];
-		int frontendPort = Integer.parseInt(args[3]);
+		int frontendPort = Integer.parseInt(args[2]);
 		Main main = new Main();
-		main.addRouteBuilder(new MainRouteBuilder(backendPort, serverId, frontendHost, frontendPort));
+		RouteBuilder routeBuilder = new MainRouteBuilder(backendPort, serverId, frontendPort);
+		main.configure().addRoutesBuilder(routeBuilder);
 		main.start();
 		main.run(new String[] {});
 	}
