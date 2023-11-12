@@ -1,8 +1,9 @@
-package demo;
+package loadbalancing;
 
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
@@ -30,17 +31,27 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setBody().simple("${body.payload}")
 		.log("Invoking transformation '${header.transformation}'.")
 		.setHeader("serverId").constant(serverId)
-		.process(exchange -> {
-			exchange.getIn().setHeader("timestamp", new Date().getTime());
-			exchange.getIn().setHeader("fileName", UUID.randomUUID().toString() + ".xml");
-		})
-		.recipientList().simple("xslt:file:./transformations/${header.transformation}.xsl")
-		.process(exchange -> exchange.getIn().setHeader("timespan",
-				new Date().getTime() - exchange.getIn().getHeader("timestamp", long.class)))
+		.setHeader("timestamp").method(getClass(), "getTimestamp")
+		.recipientList().simple("xslt:file:./runtime/${header.transformation}.xsl")
+		.setHeader("timespan").method(getClass(), "getTimespan")
+		.setHeader("fileName").method(getClass(), "getFileName")
+		.removeHeader("timestamp")
 		.bean(Response.class, "createResponse")
+		.removeHeader("transformation")
 		.log("Sending '${header.fileName}' to frontend.")
-		.recipientList().simple(
-				String.format("websocket://%s:%d/reply?fileName=${header.fileName}",
-						frontendHost, frontendPort));
+		.toF("websocket://%s:%d/reply", frontendHost, frontendPort);
+	}
+	
+	public static long getTimestamp() {
+		return new Date().getTime();
+	}
+	
+	public static long getTimespan(Exchange exchange) {
+		long timestamp = exchange.getIn().getHeader("timestamp", long.class);
+		return new Date().getTime() - timestamp;
+	}
+	
+	public static String getFileName() {
+		return UUID.randomUUID().toString() + ".xml";
 	}
 }

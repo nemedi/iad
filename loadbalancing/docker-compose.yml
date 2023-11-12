@@ -3,7 +3,7 @@ services:
   backend1:
     image: loadbalancing-backend:latest
     volumes:
-      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
+      - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend1.local
     ports:
       - "9001:8000"
@@ -15,7 +15,7 @@ services:
   backend2:
     image: loadbalancing-backend:latest
     volumes:
-      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
+      - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend2.local
     ports:
       - "9002:8000"
@@ -27,7 +27,7 @@ services:
   backend3:
     image: loadbalancing-backend:latest
     volumes:
-      - ./runtime/transformations:/usr/share/loadbalancing-backend/transformations
+      - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend3.local
     ports:
       - "9003:8000"
@@ -39,7 +39,7 @@ services:
   frontend:
     image: loadbalancing-frontend:latest
     volumes:
-      - ./runtime/data:/usr/share/loadbalancing-frontend/data
+      - ./loadbalancing-frontend/runtime:/usr/share/loadbalancing/runtime
     hostname: frontend.local
     ports:
       - "9000:8000"

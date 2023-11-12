@@ -1,11 +1,11 @@
-package demo;
+package loadbalancing;
 
 import java.text.MessageFormat;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.websocket.WebsocketComponent;
+import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class MainRouteBuilder extends RouteBuilder {
 
@@ -31,19 +31,26 @@ public class MainRouteBuilder extends RouteBuilder {
 		var component = getContext().getComponent("websocket", WebsocketComponent.class);
 		component.setPort(port);
 		
-		from("file:data/in")
-		.setHeader("transformation").method(getClass(), "getTransformation")
+		from("file:./runtime/in")
 		.convertBodyTo(String.class)
+		.setHeader("transformation").method(getClass(), "getTransformation")
+		.bean(Request.class, "createRequest")
 		.log("Invoking transformation '${header.transformation}'.")
-		.process(debug())
+		.marshal().json(JsonLibrary.Jackson)
 		.loadBalance()
 		.roundRobin()
 		.to(backends);
 		
 		from("websocket:reply")
 		.convertBodyTo(String.class)
+		.unmarshal().json(JsonLibrary.Jackson)
+		.bean(Response.class, "extractResponse")
+		.setHeader("serverId").simple("${body.serverId}")
+		.setHeader("transformation").simple("${body.transformation}")
+		.setHeader("fileName").simple("${body.fileName}")
+		.setHeader("timespan").simple("${body.timespan}")
+		.setBody().simple("${body.payload}")
 		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}'.")
-		.process(debug())
 		.toD("file:data/out?fileName=${header.fileName}");
 	}
 	
@@ -56,10 +63,4 @@ public class MainRouteBuilder extends RouteBuilder {
 		return fileName;
 	}
 	
-	private static Processor debug() {
-		return exchange -> {
-			System.out.println(exchange.getIn().getBody());
-		};
-	}
-
 }

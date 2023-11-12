@@ -1,4 +1,4 @@
-package demo;
+package loadbalancing;
 
 import java.util.Arrays;
 
