@@ -37,15 +37,12 @@ public class MainRouteBuilder extends RouteBuilder {
 		.bean(Request.class, "createRequest")
 		.log("Invoking transformation '${header.transformation}'.")
 		.marshal().json(JsonLibrary.Jackson)
-		.convertBodyTo(String.class)
-		.process(debug())
 		.loadBalance()
 		.roundRobin()
 		.to(backends);
 		
 		fromF("mina:tcp://0.0.0.0:%d", port)
 		.convertBodyTo(String.class)
-		.process(debug())
 		.unmarshal().json(JsonLibrary.Jackson)
 		.bean(Response.class, "extractResponse")
 		.setHeader("serverId").simple("${body.serverId}")
@@ -65,10 +62,5 @@ public class MainRouteBuilder extends RouteBuilder {
 		}
 		return fileName;
 	}
-	
-	protected Processor debug() {
-		return exchange -> {
-			System.out.println(exchange.getIn());
-		};
-	}
+
 }

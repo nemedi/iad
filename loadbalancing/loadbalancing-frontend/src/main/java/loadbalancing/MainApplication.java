@@ -11,13 +11,11 @@ public class MainApplication {
 		if (args.length < 2) {
 			return;
 		}
-		int port = Integer.parseInt(args[0]);
-		String[] backends = Arrays.copyOfRange(args, 1, args.length);
 		Main main = new Main();
-		RouteBuilder routeBuilder = new MainRouteBuilder(port, backends);
+		RouteBuilder routeBuilder = new MainRouteBuilder(Integer.parseInt(args[0]),
+				Arrays.copyOfRange(args, 1, args.length));
 		main.configure().addRoutesBuilder(routeBuilder);
-		main.start();
-		main.run(new String[] {});
+		main.run();
 	}
 
 }

@@ -6,5 +6,4 @@ ADD ./target/loadbalancing-frontend-0.0.1-SNAPSHOT.jar /usr/share/loadbalancing/
 WORKDIR /usr/share/loadbalancing
 ENV PORT 8080
 ENV BACKENDS ""
-ENV DEBUG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8000"
-CMD ["sh", "-c", "java $DEBUG -jar loadbalancing.jar $PORT $BACKENDS"]
+CMD ["sh", "-c", "java -jar loadbalancing.jar $PORT $BACKENDS"]

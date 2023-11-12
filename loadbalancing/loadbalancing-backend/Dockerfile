@@ -7,5 +7,4 @@ WORKDIR /usr/share/loadbalancing
 ENV PORT 9090
 ENV SERVER_ID Server
 ENV FRONTEND_PORT 8080
-ENV DEBUG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8000"
-CMD ["sh", "-c", "java $DEBUG -jar loadbalancing.jar $PORT $SERVER_ID $FRONTEND_PORT"]
+CMD ["sh", "-c", "java -jar loadbalancing.jar $PORT $SERVER_ID $FRONTEND_PORT"]

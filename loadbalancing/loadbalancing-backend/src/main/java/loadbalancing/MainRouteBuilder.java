@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
@@ -27,7 +26,6 @@ public class MainRouteBuilder extends RouteBuilder {
 		
 		fromF("mina:tcp://0.0.0.0:%d", backendPort)
 		.convertBodyTo(String.class)
-		.process(debug())
 		.unmarshal().json(JsonLibrary.Jackson)
 		.bean(Request.class, "extractRequest")
 		.setHeader("transformation").simple("${body.transformation}")
@@ -44,8 +42,6 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader("remoteEndpoint").method(this, "getRemoteEndpoint")
 		.log("Sending '${header.fileName}' to frontend.")
 		.marshal().json(JsonLibrary.Jackson)
-		.convertBodyTo(String.class)
-		.process(debug())
 		.toD("mina:tcp://${header.remoteEndpoint}");
 	}
 	
@@ -72,11 +68,5 @@ public class MainRouteBuilder extends RouteBuilder {
 		}
 		remoteEndpoint += ":" + Integer.toString(frontendPort);
 		return remoteEndpoint;
-	}
-	
-	protected Processor debug() {
-		return exchange -> {
-			System.out.println(exchange.getIn());
-		};
 	}
 }

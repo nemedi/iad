@@ -9,14 +9,11 @@ public class MainApplication {
 		if (args.length != 3) {
 			return;
 		}
-		int backendPort = Integer.parseInt(args[0]);
-		String serverId = args[1];
-		int frontendPort = Integer.parseInt(args[2]);
 		Main main = new Main();
-		RouteBuilder routeBuilder = new MainRouteBuilder(backendPort, serverId, frontendPort);
+		RouteBuilder routeBuilder = new MainRouteBuilder(Integer.parseInt(args[0]),
+				args[1], Integer.parseInt(args[2]));
 		main.configure().addRoutesBuilder(routeBuilder);
-		main.start();
-		main.run(new String[] {});
+		main.run();
 	}
 
 }
