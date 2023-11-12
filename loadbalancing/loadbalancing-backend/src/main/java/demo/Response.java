@@ -1,19 +1,29 @@
 package demo;
 
-import java.io.Serializable;
-
 import org.apache.camel.Exchange;
 
-public class Response implements Serializable {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	private static final long serialVersionUID = 1L;
+public class Response {
+
+	@JsonProperty
 	private String server;
+	
+	@JsonProperty
 	private long timespan;
 	
+	@JsonProperty
+	private String fileName;
 	
-	private Response(String server, long timespan) {
+	@JsonProperty
+	private String payload;
+	
+	
+	private Response(String server, long timespan, String fileName, String payload) {
 		this.server = server;
 		this.timespan = timespan;
+		this.fileName = fileName;
+		this.payload = payload;
 	}
 
 	public String getServer() {
@@ -24,8 +34,11 @@ public class Response implements Serializable {
 		return timespan;
 	}
 
-	public static Response create(Exchange exchange, long timespan) {
+	public static Response createResponse(Exchange exchange) {
 		String server = exchange.getIn().getHeader("server", String.class);
-		return new Response(server, timespan);
+		long timespan = exchange.getIn().getHeader("timespan", long.class);
+		String fileName = exchange.getIn().getBody(String.class);
+		String payload = exchange.getIn().getBody(String.class);
+		return new Response(server, timespan, fileName, payload);
 	}
 }

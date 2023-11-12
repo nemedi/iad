@@ -2,6 +2,7 @@ package demo;
 
 import java.text.MessageFormat;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.websocket.WebsocketComponent;
@@ -31,7 +32,7 @@ public class MainRouteBuilder extends RouteBuilder {
 		component.setPort(port);
 		
 		from("file:data/in")
-		.setHeader("transformation").simple("${header.fileName}")
+		.setHeader("transformation").method(getClass(), "getTransformation")
 		.convertBodyTo(String.class)
 		.log("Invoking transformation '${header.transformation}'.")
 		.process(debug())
@@ -44,6 +45,15 @@ public class MainRouteBuilder extends RouteBuilder {
 		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}'.")
 		.process(debug())
 		.toD("file:data/out?fileName=${header.fileName}");
+	}
+	
+	public static final String getTransformation(Exchange exchange) {
+		String fileName = exchange.getIn().getHeader("CamelFileName", String.class);
+		int index = fileName.lastIndexOf('.');
+		if (index > 0) {
+			fileName = fileName.substring(0, index);
+		}
+		return fileName;
 	}
 	
 	private static Processor debug() {

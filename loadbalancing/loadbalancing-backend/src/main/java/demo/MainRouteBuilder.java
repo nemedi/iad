@@ -1,9 +1,10 @@
 package demo;
 
+import java.util.Date;
 import java.util.UUID;
 
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class MainRouteBuilder extends RouteBuilder {
 	
@@ -23,26 +24,23 @@ public class MainRouteBuilder extends RouteBuilder {
 	public void configure() throws Exception {
 		fromF("mina2:tcp://0.0.0.0:%d", backendPort)
 		.convertBodyTo(String.class)
+		.unmarshal().json(JsonLibrary.Jackson)
+		.bean(Request.class, "extractRequest")
+		.setHeader("transformation").simple("${body.transformation}")
+		.setBody().simple("${body.payload}")
 		.log("Invoking transformation '${header.transformation}'.")
-		.process(debug())
 		.setHeader("serverId").constant(serverId)
+		.process(exchange -> {
+			exchange.getIn().setHeader("timestamp", new Date().getTime());
+			exchange.getIn().setHeader("fileName", UUID.randomUUID().toString() + ".xml");
+		})
 		.recipientList().simple("xslt:file:./transformations/${header.transformation}.xsl")
-		.setHeader("fileName").method(MainRouteBuilder.class, "getFileName")
+		.process(exchange -> exchange.getIn().setHeader("timespan",
+				new Date().getTime() - exchange.getIn().getHeader("timestamp", long.class)))
+		.bean(Response.class, "createResponse")
 		.log("Sending '${header.fileName}' to frontend.")
-		.process(debug())
 		.recipientList().simple(
 				String.format("websocket://%s:%d/reply?fileName=${header.fileName}",
 						frontendHost, frontendPort));
 	}
-	
-	public static String getFileName() {
-		return UUID.randomUUID().toString();
-	}
-	
-	private static Processor debug() {
-		return exchange -> {
-			System.out.println(exchange.getIn().getBody());
-		};
-	}
-
 }
