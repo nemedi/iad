@@ -1,0 +1,34 @@
+package demo;
+
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.websocket.WebsocketComponent;
+
+public class MainRouteBuilder extends RouteBuilder {
+
+	private int port;
+	private String[] backends;
+
+	public MainRouteBuilder(int port, String[] backends) {
+		this.port = port;
+		this.backends = backends;
+	}
+
+	@Override
+	public void configure() throws Exception {
+		var component = getContext().getComponent("websocket", WebsocketComponent.class);
+		component.setPort(port);
+		from("file:data/in")
+		.setHeader("transformation").simple("${header.fileName}")
+		.convertBodyTo(String.class)
+		.log("Invoking transformation '${header.transformation}'.")
+		
+	}
+	
+	private static Processor degub() {
+		return exchange -> {
+			System.out.println(exchange.getIn().getBody());
+		};
+	}
+
+}

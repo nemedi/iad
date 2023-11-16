@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;Request.java&apos; to &apos;loadbalancing-frontend/src/main/java/demo&apos;&#x0A;- Original project: &apos;loadbalancing-backend&apos;&#x0A;- Destination element: &apos;loadbalancing-frontend/src/main/java/demo&apos;&#x0A;- Original element: &apos;demo.Request.java&apos;" description="Copy compilation unit" destination="=loadbalancing-frontend/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;demo" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;demo{Request.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1699712955758" units="1" version="1.0"/>
+</session>

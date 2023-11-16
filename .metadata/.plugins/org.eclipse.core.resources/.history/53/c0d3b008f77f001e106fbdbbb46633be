@@ -1,0 +1,10 @@
+FROM alpine
+RUN apk --no-cache add openjdk16 mc net-tools iputils-ping
+RUN mkdir -p /usr/share/demo-frontend/data
+ADD ./lib/* /usr/share/demo-frontend/
+ADD ./target/demo-frontend-1.0.0-SNAPSHOT.jar /usr/share/demo-frontend/demo-frontend.jar
+WORKDIR /usr/share/demo-frontend
+ENV PORT 8080
+ENV BACKENDS ""
+ENV DEBUG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8000"
+CMD ["sh", "-c", "java $DEBUG -jar demo-frontend.jar $PORT $SERVER_ID $BACKENDS"]

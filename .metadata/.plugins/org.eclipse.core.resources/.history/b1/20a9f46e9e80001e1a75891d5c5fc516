@@ -1,0 +1,31 @@
+package demo;
+
+import java.util.Map;
+
+import org.apache.camel.Exchange;
+
+public class Request {
+
+	private String transformation;
+	private String payload;
+	
+	private Request(String transformation, String payload) {
+		this.transformation = transformation;
+		this.payload = payload;
+	}
+	
+	public String getTransformation() {
+		return transformation;
+	}
+	
+	public String getPayload() {
+		return payload;
+	}
+	
+	public static Request extractRequest(Exchange exchange) {
+		Map<String, Object> body = exchange.getIn().getBody();
+		String transformation = (String) body.get("transformation");
+		String payload = (String) body.get("payload");
+		return new Request(transformation, payload);
+	}
+}

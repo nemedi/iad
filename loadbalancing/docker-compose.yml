@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   backend1:
-    image: loadbalancing-backend:latest
+    image: demo/loadbalancing-backend:latest
     volumes:
       - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend1.local
@@ -10,7 +10,7 @@ services:
       - SERVER_ID=Server1
       - FRONTEND_PORT=8080
   backend2:
-    image: loadbalancing-backend:latest
+    image: demo/loadbalancing-backend:latest
     volumes:
       - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend2.local
@@ -19,7 +19,7 @@ services:
       - SERVER_ID=Server2
       - FRONTEND_PORT=8080
   backend3:
-    image: loadbalancing-backend:latest
+    image: demo/loadbalancing-backend:latest
     volumes:
       - ./loadbalancing-backend/runtime:/usr/share/loadbalancing/runtime
     hostname: backend3.local
@@ -28,7 +28,7 @@ services:
       - SERVER_ID=Server3
       - FRONTEND_PORT=8080
   frontend:
-    image: loadbalancing-frontend:latest
+    image: demo/loadbalancing-frontend:latest
     volumes:
       - ./loadbalancing-frontend/runtime:/usr/share/loadbalancing/runtime
     hostname: frontend.local

@@ -8,9 +8,10 @@
 	<properties>
 		<camel.version>4.1.0</camel.version>
 		<slf4j.version>2.0.9</slf4j.version>
-		<java.version>19</java.version>
+		<java.version>17</java.version>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -45,7 +46,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<artifactId>slf4j-reload4j</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
@@ -53,17 +54,6 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-		
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-    </dependency>		
 	</dependencies>
 	<build>
 		<plugins>
@@ -106,24 +96,34 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.13</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<id>tag-latest</id>
+						<id>docker-build</id>
+						<phase>install</phase>
 						<goals>
-							<goal>build</goal>
-							<goal>tag</goal>
-							<goal>push</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<repository>${project.artifactId}</repository>
-							<tag>latest</tag>
+							<executable>/usr/local/bin/docker</executable>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<arguments>
+								<argument>build</argument>
+								<argument>-f</argument>
+								<argument>Dockerfile</argument>
+								<argument>--build-arg</argument>
+								<argument>
+									JAR_FILE=target/${project.artifactId}-${project.version}-${jar.suffix}.jar</argument>
+								<argument>-t</argument>
+								<argument>${project.groupId}/${project.artifactId}:latest</argument>
+								<argument>.</argument>
+							</arguments>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>			
 		</plugins>
 	</build>
 </project>
