@@ -107,7 +107,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>/usr/local/bin/docker</executable>
+							<executable>docker</executable>
 							<workingDirectory>${project.basedir}</workingDirectory>
 							<arguments>
 								<argument>build</argument>
