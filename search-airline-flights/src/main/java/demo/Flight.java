@@ -99,6 +99,8 @@ public class Flight {
 		details.put("aircraft", model.get("text"));
 		details.put("origin", origin.get("name"));
 		details.put("destination", destination.get("destination"));
+		var status = (Map<String, Object>) body.get("status");
+		details.put("status", (String) status.get("text"));		
 		return details;
 	}
 	
