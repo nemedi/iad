@@ -3,7 +3,6 @@ package loadbalancing;
 import java.text.MessageFormat;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
@@ -50,7 +49,7 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader("fileName").simple("${body.fileName}")
 		.setHeader("timespan").simple("${body.timespan}")
 		.setBody().simple("${body.payload}")
-		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}'.")
+		.log("Received processed file for transformation '${header.transformation}' from backend '${header.serverId}' that was processed in ${header.timespan} ms.")
 		.toD("file:./runtime/out?fileName=${header.fileName}");
 	}
 	
