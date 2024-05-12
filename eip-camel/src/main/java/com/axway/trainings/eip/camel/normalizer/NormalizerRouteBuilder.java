@@ -1,13 +1,11 @@
 package com.axway.trainings.eip.camel.normalizer;
 
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
 import org.apache.camel.model.dataformat.JsonLibrary;
+
+import jakarta.xml.bind.JAXBContext;
 
 public class NormalizerRouteBuilder extends RouteBuilder {
 
