@@ -1,8 +1,8 @@
 package com.axway.trainings.eip.camel.normalizer;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
+import org.apache.camel.model.dataformat.JaxbDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
 import jakarta.xml.bind.JAXBContext;

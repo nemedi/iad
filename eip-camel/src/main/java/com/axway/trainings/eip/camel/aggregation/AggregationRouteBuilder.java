@@ -1,9 +1,9 @@
 package com.axway.trainings.eip.camel.aggregation;
 
-//import javax.xml.bind.JAXBException;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.BindyType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 public class AggregationRouteBuilder extends RouteBuilder {
 
@@ -23,8 +23,8 @@ public class AggregationRouteBuilder extends RouteBuilder {
     	.aggregate(constant(true), new DistrictsAggregationStrategy())
     	.completionTimeout(1000)
     	.unmarshal().bindy(BindyType.Csv, City.class)    	
-//    	.marshal(new JaxbDataFormat(
-//    			JAXBContext.newInstance(District.class, DistrictCollection.class)))
+    	.marshal(new JaxbDataFormat(
+    			JAXBContext.newInstance(District.class, DistrictCollection.class)))
     	.to(TestFileResourceUtils.getFileBaseUti(AggregationRouteBuilder.class)
     			+ "?fileName=districts.xml&fileExist=Override")
     	.log("Done");
