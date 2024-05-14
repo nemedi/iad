@@ -3,11 +3,11 @@ package engine;
 import java.util.Comparator;
 import java.util.List;
 
-public class SortStep implements Step {
+public class ResequenceStep implements Step {
 
 	private Comparator<Exchange> comparator;
 
-	public SortStep(Comparator<Exchange> comparator) {
+	public ResequenceStep(Comparator<Exchange> comparator) {
 		this.comparator = comparator;
 	}
 

@@ -1,6 +1,6 @@
 package test;
 
-import static engine.Route.from;
+import static engine.RouteBuilder.from;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class Program {
 			exchange.setBody(district);
 			return exchange;
 		})
-		.sort((firstExchange, secondExchange) ->
+		.resequence((firstExchange, secondExchange) ->
 			firstExchange.getBody(District.class).getName()
 				.compareTo(secondExchange.getBody(District.class).getName()))
 		.aggregate(exchange -> true, (oldExchange, newExchange) -> {

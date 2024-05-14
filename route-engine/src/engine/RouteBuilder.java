@@ -13,25 +13,25 @@ import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.lang.Thread.sleep;
 
-public class Route {
+public class RouteBuilder {
 	
 	private static final ExecutorService EXECUTOR_SERVICE =
 			newFixedThreadPool(20 * Runtime.getRuntime().availableProcessors());
 
 	private List<Step> steps = new ArrayList<Step>();
 	
-	private Route() {
+	private RouteBuilder() {
 		
 	}
 	
-	public static Route from(Supplier<List<?>> supplier) {
-		Route route = new Route();
+	public static RouteBuilder from(Supplier<List<?>> supplier) {
+		RouteBuilder route = new RouteBuilder();
 		route.steps.add(new FromStep(supplier));
 		return route;
 	}
 	
-	public static Route from(String endpoint) {
-		return from(Registry.getInstance().createSupplier(endpoint));
+	public static RouteBuilder from(String endpoint) {
+		return from(Registry.getInstance().createConsumer(endpoint));
 	}
 	
 	public void to(Consumer<Exchange> consumer) {
@@ -52,27 +52,27 @@ public class Route {
 	}
 	
 	public void to(String endpoint) {
-		to(Registry.getInstance().createConsumer(endpoint));
+		to(Registry.getInstance().createProducer(endpoint));
 	}
 	
-	public Route filter(Predicate<Exchange> predicate) {
+	public RouteBuilder filter(Predicate<Exchange> predicate) {
 		steps.add(new FilterStep(predicate));
 		return this;
 	}
 	
-	public Route convertBodyTo(Class<?> type) {
+	public RouteBuilder convertBodyTo(Class<?> type) {
 		steps.add(new ConvertBodyToStep(type));
 		return this;
 	}
 	
-	public Route aggregate(Function<Exchange, Object> criterion,
+	public RouteBuilder aggregate(Function<Exchange, Object> criterion,
 			Aggregator<Exchange> aggregator) {
 		steps.add(new AggregatorStep(criterion, aggregator));
 		return this;
 	}
 	
-	public Route sort(Comparator<Exchange> comparator) {
-		steps.add(new SortStep(comparator));
+	public RouteBuilder resequence(Comparator<Exchange> comparator) {
+		steps.add(new ResequenceStep(comparator));
 		return this;
 	}
 	

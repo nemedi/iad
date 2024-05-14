@@ -26,8 +26,8 @@ public class Registry {
 	
 	@SuppressWarnings({ "rawtypes" })
 	private Registry() {
-		Class supplierType = CsvSupplier.class;
-		Class consumerType = CsvConsumer.class;
+		Class supplierType = CsvConsumer.class;
+		Class consumerType = CsvProducer.class;
 		registerComponent("csv", supplierType, consumerType);
 		Converter<String, List<Object>> listToStringConverter = list -> list.stream()
 				.map(item -> item.toString())
@@ -39,9 +39,9 @@ public class Registry {
 	}
 	
 	public Registry registerComponent(String schema,
-			Class<? extends Supplier<List<?>>> supplierType,
-			Class<? extends Consumer<Exchange>> consumerType) {
-		components.put(schema, new Component(supplierType, consumerType));
+			Class<? extends Supplier<List<?>>> consumerType,
+			Class<? extends Consumer<Exchange>> producerType) {
+		components.put(schema, new Component(consumerType, producerType));
 		return this;
 	}
 	
@@ -58,32 +58,22 @@ public class Registry {
 		return (Converter<T, V>) converters.get(fromType).get(toType);
 	}
 	
-	public Supplier<List<?>> createSupplier(String endpoint) {
+	public Supplier<List<?>> createConsumer(String endpoint) {
 		try {
 			String schema = endpoint.substring(0, endpoint.indexOf(':'));
 			endpoint = endpoint.substring(endpoint.indexOf(':') + 1);
-			Class<? extends Supplier<List<?>>> supplierType =
-					components.get(schema).getSupplierType();
-			Supplier<List<?>> supplier = supplierType.getConstructor(String.class)
-					.newInstance(endpoint);
-			return supplierType.cast(supplier);
+			return components.get(schema).createConsumer(endpoint);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	public Consumer<Exchange> createConsumer(String endpoint) {
+	public Consumer<Exchange> createProducer(String endpoint) {
 		try {
 			String schema = endpoint.substring(0, endpoint.indexOf(':'));
 			endpoint = endpoint.substring(endpoint.indexOf(':') + 1);
-			Class<? extends Consumer<Exchange>> consumerType =
-					components.get(schema).getConsumerType();
-			Consumer<Exchange> consumer = consumerType.getConstructor(String.class)
-					.newInstance(endpoint);
-			return consumerType.cast(consumer);
+			return components.get(schema).createProducer(endpoint);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		}
 	}

@@ -170,7 +170,7 @@ public class MainRouteBuilder extends RouteBuilder {
 			})
 			.completionTimeout(1000)
 			.marshal().json(JsonLibrary.Jackson)
-			.wireTap("direct:setInCase")
+			.wireTap("direct:setInCache")
 			.setHeader("Content-Type").constant("application/json");
 		
 		from("direct:resolveLocation")

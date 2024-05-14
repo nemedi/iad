@@ -7,19 +7,25 @@ import java.util.function.Supplier;
 public class Component {
 
 	private Class<? extends Supplier<List<?>>> supplierType;
-	private Class<? extends Consumer<Exchange>> consumerType;
+	private Class<? extends Consumer<Exchange>> producerType;
 
-	public Component(Class<? extends Supplier<List<?>>> supplierType,
-			Class<? extends Consumer<Exchange>> consumerType) {
-		this.supplierType = supplierType;
-		this.consumerType = consumerType;
+	public Component(Class<? extends Supplier<List<?>>> consumerType,
+			Class<? extends Consumer<Exchange>> producerType) {
+		this.supplierType = consumerType;
+		this.producerType = producerType;
 	}
 	
-	public Class<? extends Supplier<List<?>>> getSupplierType() {
-		return supplierType;
+	public Supplier<List<?>> createConsumer(String endpoint)
+			throws ReflectiveOperationException {
+		Supplier<List<?>> supplier = supplierType.getConstructor(String.class)
+				.newInstance(endpoint);
+		return supplierType.cast(supplier);
 	}
 	
-	public Class<? extends Consumer<Exchange>> getConsumerType() {
-		return consumerType;
+	public Consumer<Exchange> createProducer(String endpoint)
+			throws ReflectiveOperationException {
+		Consumer<Exchange> consumer = producerType.getConstructor(String.class)
+				.newInstance(endpoint);
+		return producerType.cast(consumer);
 	}
 }
