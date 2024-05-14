@@ -2,7 +2,7 @@ package com.axway.trainings.eip.camel.messagingmapper;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.component.http.HttpMessage;
+import org.apache.camel.http.common.HttpMessage;
 
 public class NameParameterProcessor implements Processor {
 	

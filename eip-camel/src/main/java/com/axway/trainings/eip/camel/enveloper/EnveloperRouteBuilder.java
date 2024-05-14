@@ -1,7 +1,7 @@
 package com.axway.trainings.eip.camel.enveloper;
 
 import org.apache.camel.builder.RouteBuilder;
-import static org.apache.camel.processor.idempotent.MemoryIdempotentRepository.memoryIdempotentRepository;
+import static org.apache.camel.support.processor.idempotent.MemoryIdempotentRepository.memoryIdempotentRepository;
 
 public class EnveloperRouteBuilder extends RouteBuilder {
 

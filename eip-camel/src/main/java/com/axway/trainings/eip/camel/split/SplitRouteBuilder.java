@@ -1,10 +1,10 @@
 package com.axway.trainings.eip.camel.split;
 
-import javax.xml.bind.JAXBContext;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
+
+import jakarta.xml.bind.JAXBContext;
 
 public class SplitRouteBuilder extends RouteBuilder {
 

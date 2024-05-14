@@ -1,7 +1,7 @@
 package com.axway.trainings.eip.camel.aggregation;
 
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 public class DistrictsAggregationStrategy implements AggregationStrategy {
 

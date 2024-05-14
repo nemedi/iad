@@ -7,9 +7,8 @@ public class Application {
 
     public static void main(String... args) throws Exception {
         Main main = new Main();
-        main.enableHangupSupport();
         CompetingConsumerRouteBuilder routeBuilder = new CompetingConsumerRouteBuilder();
-		main.addRouteBuilder(routeBuilder);
+		main.configure().addRoutesBuilder(routeBuilder);
 		main.start();
         ProducerTemplate producerTemplate = routeBuilder.getContext().createProducerTemplate();
         for (int i = 0; i < 5; i++) {

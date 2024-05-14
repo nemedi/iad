@@ -1,6 +1,6 @@
 package com.axway.trainings.eip.camel.resequencer;
 
-import static org.apache.camel.processor.idempotent.MemoryIdempotentRepository.memoryIdempotentRepository;
+import static org.apache.camel.support.processor.idempotent.MemoryIdempotentRepository.memoryIdempotentRepository;
 
 import org.apache.camel.builder.RouteBuilder;
 

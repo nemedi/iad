@@ -20,7 +20,7 @@ public class LoadbalancingRouteBuilder extends RouteBuilder {
 	public void configure() throws Exception {
 		List<String> uris = new ArrayList<String>();
 		for (int backendPort : backendPorts) {
-			String uri = MessageFormat.format("mina2:tcp://localhost:{0}?sync=true",
+			String uri = MessageFormat.format("mina:tcp://localhost:{0}?sync=true",
 					Integer.toString(backendPort));
 			uris.add(uri);
 			from(uri)

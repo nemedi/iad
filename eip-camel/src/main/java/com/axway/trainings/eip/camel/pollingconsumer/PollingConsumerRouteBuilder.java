@@ -2,7 +2,7 @@ package com.axway.trainings.eip.camel.pollingconsumer;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.twitter.TwitterComponent;
+import org.apache.camel.component.twitter.directmessage.TwitterDirectMessageComponent;
 import org.apache.camel.component.websocket.WebsocketComponent;
 
 public class PollingConsumerRouteBuilder extends RouteBuilder {
@@ -37,7 +37,7 @@ public class PollingConsumerRouteBuilder extends RouteBuilder {
 		WebsocketComponent websocketComponent = context.getComponent("websocket", WebsocketComponent.class);
 		websocketComponent.setPort(port);
 		websocketComponent.setStaticResources("classpath:.");
-		TwitterComponent twitterComponent = context.getComponent("twitter", TwitterComponent.class);
+		TwitterDirectMessageComponent twitterComponent = context.getComponent("twitter", TwitterDirectMessageComponent.class);
 		twitterComponent.setConsumerKey(consumerKey);
 		twitterComponent.setConsumerSecret(consumerSecret);
 		twitterComponent.setAccessToken(accessToken);

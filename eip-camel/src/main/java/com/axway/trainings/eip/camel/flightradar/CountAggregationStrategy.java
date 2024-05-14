@@ -3,8 +3,8 @@ package com.axway.trainings.eip.camel.flightradar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 public class CountAggregationStrategy implements AggregationStrategy {
 	

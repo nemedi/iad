@@ -1,6 +1,7 @@
 package com.axway.trainings.eip.camel.aggregation;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

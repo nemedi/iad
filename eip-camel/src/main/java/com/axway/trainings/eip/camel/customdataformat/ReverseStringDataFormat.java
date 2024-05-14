@@ -35,4 +35,12 @@ public class ReverseStringDataFormat implements DataFormat {
 		return builder.toString();
 	}
 
+	@Override
+	public void start() {
+	}
+
+	@Override
+	public void stop() {
+	}
+
 }
