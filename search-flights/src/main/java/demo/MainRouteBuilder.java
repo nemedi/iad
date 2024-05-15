@@ -1,4 +1,4 @@
-package demo.search.flights;
+package demo;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;

@@ -33,6 +33,9 @@ public class Flight {
 	@JsonProperty
 	private String destination;
 	
+	@JsonProperty
+	private String status;
+	
 	private Flight(String code) {
 		this.code = code;
 	}
@@ -55,6 +58,10 @@ public class Flight {
 	
 	public String getDestination() {
 		return destination;
+	}
+	
+	public String getStatus() {
+		return status;
 	}
 	
 	public void setDetails(Map<String, Object> details) {
@@ -98,7 +105,7 @@ public class Flight {
 		details.put("number", number.get("default"));
 		details.put("aircraft", model.get("text"));
 		details.put("origin", origin.get("name"));
-		details.put("destination", destination.get("destination"));
+		details.put("destination", destination.get("name"));
 		var status = (Map<String, Object>) body.get("status");
 		details.put("status", (String) status.get("text"));		
 		return details;

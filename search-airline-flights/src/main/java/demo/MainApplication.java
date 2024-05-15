@@ -12,7 +12,8 @@ public class MainApplication {
 		ResourceBundle bundle = ResourceBundle.getBundle(MainApplication.class.getName());
 		int port = Integer.parseInt(bundle.getString("port"));
 		String folder = bundle.getString("folder");
-		RouteBuilder routeBuilder = new MainRouteBuilder(port, folder);
+		String backend = bundle.getString("backend");
+		RouteBuilder routeBuilder = new MainRouteBuilder(port, folder, backend);
 		main.configure().addRoutesBuilder(routeBuilder);
 		main.run();
 	}

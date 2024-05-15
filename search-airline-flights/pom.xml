@@ -6,7 +6,7 @@
 	<artifactId>search-airline-flights</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<camel.version>4.1.0</camel.version>
+		<camel.version>4.6.0</camel.version>
 		<slf4j.version>2.0.9</slf4j.version>
 		<java.version>17</java.version>
 		<maven.compiler.target>${java.version}</maven.compiler.target>

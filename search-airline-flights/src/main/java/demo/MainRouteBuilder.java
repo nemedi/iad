@@ -12,10 +12,15 @@ public class MainRouteBuilder extends RouteBuilder {
 	
 	private int port;
 	private String folder;
+	private String backend;
 
-	public MainRouteBuilder(int port, String folder) {
+	public MainRouteBuilder(int port, String folder, String backend) {
 		this.port = port;
 		this.folder = folder;
+		this.backend = backend;
+		if (this.backend.endsWith("/")) {
+			this.backend = this.backend.substring(0, this.backend.length() - 1);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -43,8 +48,8 @@ public class MainRouteBuilder extends RouteBuilder {
 			.setHeader("Accept").constant("application/json")
 			.setHeader("Accept-Encoding").constant("deflate")
 			.setBody(constant(""))
-			.setHeader(Exchange.HTTP_QUERY).simple("bridgeEndpoint=true&type=operator&query=${header.airline}")
-			.to("https://www.flightradar24.com/v1/search/web/find")
+			.setHeader(Exchange.HTTP_QUERY).simple("bridgeEndpoint=true&name=${header.airline}")
+			.to(backend + "/airlines")
 			.convertBodyTo(String.class)
 			.unmarshal().json(JsonLibrary.Jackson)
 			.bean(Airline.class, "extractAirlines")
@@ -55,7 +60,7 @@ public class MainRouteBuilder extends RouteBuilder {
 			.setHeader("Accept-Encoding").constant("deflate")
 			.setHeader(Exchange.HTTP_QUERY).simple("bridgeEndpoint=true&airline=${header.airline}")
 			.setBody(constant(""))
-			.to("https://data-cloud.flightradar24.com/zones/fcgi/feed.js")
+			.to(backend + "/flights")
 			.convertBodyTo(String.class)
 			.unmarshal().json(JsonLibrary.Jackson)
 			.bean(Flight.class, "extractFlights")
@@ -86,9 +91,9 @@ public class MainRouteBuilder extends RouteBuilder {
 			.removeHeaders("CamelHttp*")
 			.setHeader("Accept").constant("application/json")
 			.setHeader("Accept-Encoding").constant("deflate")
-			.setHeader(Exchange.HTTP_QUERY).simple("bridgeEndpoint=true&flight=${body.code}")
+			.setHeader(Exchange.HTTP_QUERY).simple("bridgeEndpoint=true&code=${body.code}")
 			.setBody(constant(""))
-			.to("https://data-live.flightradar24.com/clickhandler/")
+			.to(backend + "/flight")
 			.convertBodyTo(String.class)
 			.unmarshal().json(JsonLibrary.Jackson)
 			.bean(Flight.class, "extractFlightDetails");

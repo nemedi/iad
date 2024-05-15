@@ -103,7 +103,7 @@ public class MainRouteBuilder extends RouteBuilder {
 			.log("${body}");
 		
 		restConfiguration().host("localhost")
-			.port(8080)
+			.port(9090)
 			.component("jetty");
 		
 		rest("/api")
@@ -154,7 +154,7 @@ public class MainRouteBuilder extends RouteBuilder {
 			})
 			.completion(exchange -> exchange.getIn().getBody(Result.class).getCount() == 0)
 			.filter(exchange -> exchange.getIn().getBody(Result.class).getCount() > 0)
-			.sort(simple("${body.count}"))
+			.resequence(simple("${body.count}"))
 			.aggregate(constant(true), (oldExchange, newExchange) -> {
 				if (oldExchange == null) {
 					List<Result> results = new ArrayList<Result>();
