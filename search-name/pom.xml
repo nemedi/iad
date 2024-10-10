@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.5</version>
+		<version>3.3.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>demo</groupId>
@@ -15,8 +15,8 @@
 	<name>search-name</name>
 	<description>Search Name using Camel</description>
 	<properties>
-		<java.version>11</java.version>
-		<camel.version>3.19.0</camel.version>
+		<java.version>21</java.version>
+		<camel.version>4.8.0</camel.version>
 	</properties>
 	<dependencies>
 		<dependency>

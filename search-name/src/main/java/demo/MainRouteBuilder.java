@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MainRouteBuilder extends RouteBuilder {
 
 	public class Result {
-
+		
 		@JsonIgnore
 		private double latitude;
 		
@@ -116,59 +117,65 @@ public class MainRouteBuilder extends RouteBuilder {
 				.when().method(getClass(), "isInCache")
 					.to("direct:getFromCache")
 				.otherwise()
-					.to("direct:getFromRemote");
+					.to("direct:getFromBackend");
 
 		from("direct:getFromCache")
 			.setHeader("Content-Type").constant("application/json")
 			.setBody().method(getClass(), "getFromCache");
 		
-		from("direct:getFromRemote")
+		from("direct:getFromBackend")
 			.setHeader("Accept").constant("application/json")
+			.setHeader("Cache-Control").constant("no-cache")
 			.setHeader(Exchange.HTTP_QUERY).method(getClass(), "getOttomotorQuery")
 			.to(configuration.getOttomotorEndpoint())
 			.convertBodyTo(String.class)
 			.unmarshal().json(JsonLibrary.Jackson)
 			.bean(getClass(), "getResults")
+			.setHeader("id").method(getClass(), "getId")
 			.split().body()
-			.choice().when(exchange -> exchange.getIn().getBody(Result.class).getCount() > 0)
+			.parallelProcessing()
 			.enrich("direct:resolveLocation", (originalExchange, enrichedExchange) -> {
 				Result result = originalExchange.getIn().getBody(Result.class);
-				Properties properties = enrichedExchange.getIn().getBody(Properties.class);
-				result.setDistrict(properties.getProperty("district"));
-				result.setCountry(properties.getProperty("country"));
+				if (result != null) {
+					Properties properties = enrichedExchange.getIn().getBody(Properties.class);
+					result.setDistrict(properties.getProperty("district"));
+					result.setCountry(properties.getProperty("country"));
+				}
 				return originalExchange;
 			})
-			.end()
-			.filter(exchange -> "România".equalsIgnoreCase(
-					exchange.getIn().getBody(Result.class).getCountry())
-					&& exchange.getIn().getBody(Result.class).getDistrict() != null)
+			.filter(exchange -> {
+				Result result = exchange.getIn().getBody(Result.class);
+				return "România".equalsIgnoreCase(result.getCountry())
+						&& result.getDistrict() != null;
+			})
 			.aggregate(simple("${body.district}"), (oldExchange, newExchange) -> {
+				Result result = newExchange.getIn().getBody(Result.class);
 				if (oldExchange == null) {
 					return newExchange;
 				} else {
-					oldExchange.getIn().getBody(Result.class)
-						.mergeWith(newExchange.getIn().getBody(Result.class));
+					oldExchange.getIn()
+						.getBody(Result.class)
+						.mergeWith(result);
 					return oldExchange;
 				}
-				
 			})
-			.completion(exchange -> exchange.getIn().getBody(Result.class).getCount() == 0)
+			.completionTimeout(3000)
 			.filter(exchange -> exchange.getIn().getBody(Result.class).getCount() > 0)
 			.resequence(simple("${body.count}"))
 			.aggregate(constant(true), (oldExchange, newExchange) -> {
+				Result result = newExchange.getIn().getBody(Result.class);
 				if (oldExchange == null) {
 					List<Result> results = new ArrayList<Result>();
-					results.add(newExchange.getIn().getBody(Result.class));
+					results.add(result);
 					newExchange.getIn().setBody(results);
 					return newExchange;
 				} else {
-					((List<Result>) oldExchange.getIn().getBody(List.class))
-						.add(newExchange.getIn().getBody(Result.class));
+					List<Result> results = oldExchange.getIn().getBody(List.class);
+					results.add(result);
 					return oldExchange;
 				}
-				
 			})
-			.completionTimeout(1000)
+			.completionTimeout(3000)
 			.marshal().json(JsonLibrary.Jackson)
 			.wireTap("direct:setInCache")
 			.setHeader("Content-Type").constant("application/json");
@@ -193,6 +200,10 @@ public class MainRouteBuilder extends RouteBuilder {
 	private Path getPath(String name) {
 		return Paths.get(MessageFormat.format("{0}{1}{2}.json",
 				configuration.getCacheFolder(), File.separator, name.toLowerCase()));
+	}
+	
+	public String getId() {
+		return UUID.randomUUID().toString();
 	}
 	
 	public boolean isInCache(Exchange exchange) {
@@ -224,7 +235,6 @@ public class MainRouteBuilder extends RouteBuilder {
 			double longitude = Double.parseDouble((String) area.get("centroid_lng"));
 			results.add(new Result(latitude, longitude, count));
 		}
-		results.add(new Result(0, 0, 0));
 		return results;
 	}
 	
