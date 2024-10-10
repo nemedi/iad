@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MainConfiguration {
 
+	@Value("${port}")
+	private int port;
+	
 	@Value("${cache.folder}")
 	private String cacheFolder;
 	
@@ -20,6 +23,10 @@ public class MainConfiguration {
 	
 	@Value("${openstreetmap.query}")
 	private String openstreetmapQuery;
+	
+	public int getPort() {
+		return port;
+	}
 	
 	public String getCacheFolder() {
 		return cacheFolder;

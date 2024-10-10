@@ -103,13 +103,15 @@ public class MainRouteBuilder extends RouteBuilder {
 		onException(Throwable.class)
 			.log("${body}");
 		
-		restConfiguration().host("localhost")
-			.port(9090)
+		restConfiguration()
+			.host("0.0.0.0")
+			.port(configuration.getPort())
 			.component("jetty");
 		
 		rest("/api")
 			.get("/names/{name}")
 			.to("direct:searchName");
+
 		
 		from("direct:searchName")
 			.removeHeaders("Camel*")
@@ -125,7 +127,9 @@ public class MainRouteBuilder extends RouteBuilder {
 		
 		from("direct:getFromBackend")
 			.setHeader("Accept").constant("application/json")
-			.setHeader("Cache-Control").constant("no-cache")
+			.setHeader("Cache-Control", constant("no-cache, no-store, must-revalidate"))
+            .setHeader("Pragma", constant("no-cache"))
+            .setHeader("Expires", constant("0"))
 			.setHeader(Exchange.HTTP_QUERY).method(getClass(), "getOttomotorQuery")
 			.to(configuration.getOttomotorEndpoint())
 			.convertBodyTo(String.class)
@@ -193,10 +197,6 @@ public class MainRouteBuilder extends RouteBuilder {
 			.bean(getClass(), "setInCache");
 	}
 	
-	private String getName(Exchange exchange) {
-		return exchange.getIn().getHeader("name", String.class);
-	}
-	
 	private Path getPath(String name) {
 		return Paths.get(MessageFormat.format("{0}{1}{2}.json",
 				configuration.getCacheFolder(), File.separator, name.toLowerCase()));
@@ -207,15 +207,17 @@ public class MainRouteBuilder extends RouteBuilder {
 	}
 	
 	public boolean isInCache(Exchange exchange) {
-		return getPath(getName(exchange)).toFile().exists();
+		String name = exchange.getIn().getHeader("name", String.class);
+		return getPath(name).toFile().exists();
 	}
 
 	public String getFromCache(Exchange exchange) throws IOException {
-		return new String(Files.readAllBytes(getPath(getName(exchange))));
+		return new String(Files.readAllBytes(getPath(exchange.getIn().getHeader("name", String.class))));
 	}
 	
 	public String getOttomotorQuery(Exchange exchange) {
-		return MessageFormat.format("bridgeEndpoint=true&" + configuration.getOttomotorQuery(), getName(exchange));
+		return MessageFormat.format("bridgeEndpoint=true&" + configuration.getOttomotorQuery(),
+				exchange.getIn().getHeader("name", String.class));
 	}
 	
 	public String getOpenstreetmapQuery(Exchange exchange) {
@@ -257,7 +259,7 @@ public class MainRouteBuilder extends RouteBuilder {
 	}
 	
 	public void setInCache(Exchange exchange) throws IOException {
-		Files.write(getPath(getName(exchange)),
+		Files.write(getPath(exchange.getIn().getHeader("name", String.class)),
 				exchange.getIn().getBody(String.class).getBytes());
 	}
 	
