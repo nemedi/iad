@@ -26,7 +26,7 @@ public class MainRouteBuilder extends RouteBuilder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void configure() throws Exception {
-		fromF("jetty:http://0.0.0.0:%d/web?matchOnUriPrefix=true", port)
+		fromF("jetty:http://0.0.0.0:%d/?matchOnUriPrefix=true", port)
 		.process(new StaticProcessor(folder));
 		restConfiguration()
 			.host("0.0.0.0")
