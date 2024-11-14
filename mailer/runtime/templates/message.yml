@@ -1,0 +1,2 @@
+subject: "Hello"
+body: "Hello {{first_name}} {{last_name}} from Camel!"
