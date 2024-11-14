@@ -54,15 +54,11 @@ public class MainRouteBuilder extends RouteBuilder {
 		from("direct:start")
 		.to("sql:select * from contacts")
 		.split().body()
-		.process(exchange -> {
-			Object body = exchange.getIn().getBody();
-			System.out.println(body);
-		})
 		.setHeader("from").constant(user)
 		.setHeader("to").simple("${body[email]}")
 		.bean(getClass(), "replaceFields")
 		.removeHeader("body")
-		.log("Sending '${header.subject}' to ${header.to}")
+		.log("Sending '${header.subject}' to '${header.to}'")
 		.setHeader("user").constant(user)
 		.setHeader("password").constant(password)
 		.toD("smtp://smtp.gmail.com:587"
