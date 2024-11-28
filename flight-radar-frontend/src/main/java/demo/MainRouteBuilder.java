@@ -26,7 +26,7 @@ public class MainRouteBuilder extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		var component = getContext().getComponent("websocket", WebsocketComponent.class);
-		component.setPort(configuration.getPort());
+		component.setPort(configuration.getFrontendPort());
 		component.setStaticResources("classpath:.");
 		onException(Exception.class).log("${body}");
 		fromF("timer:poll?fixedRate=true&delay=0&period=%d", configuration.getInterval())
@@ -46,16 +46,26 @@ public class MainRouteBuilder extends RouteBuilder {
 		.end()
 		.setBody(constant(""))
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
-		.to("http://data-live.flightradar24.com/zones/fcgi/feed.js")
+		.setHeader("cityLatitude").method(getClass(), "getCityLatitude")
+		.setHeader("cityLongitude").method(getClass(), "getCityLongitude")
+		.setHeader("northLatitude").method(getClass(), "getNorthLatitude")
+		.setHeader("southLatitude").method(getClass(), "getSouthLatitude")
+		.setHeader("westLongitude").method(getClass(), "getWestLongitude")
+		.setHeader("eastLongitude").method(getClass(), "getEastLongitude")
+		.setHeader("backendPort").method(getClass(), "getBackendPort")
+		.setHeader(Exchange.HTTP_QUERY, simple("bounds=${header.northLatitude}"
+				+ ",${header.westLongitude}"
+				+ ",${header.southLatitude}"
+				+ ",${header.eastLongitude}"))
+		.toD("http://localhost:${header.backendPort}/flights")
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
 		.setHeader("id").method(MainRouteBuilder.class, "getBatchId")
-		.bean(MainRouteBuilder.class, "extractFlights")
+		.bean(Flight.class, "extractFlights")
 		.split().body()
 		.filter(exchange -> {
-			var distance = distanceBetween(cityLatitude, cityLongitude,
-				exchange.getIn().getBody(Flight.class).getLatitude(),
-				exchange.getIn().getBody(Flight.class).getLongitude());
+			var distance = exchange.getIn().getBody(Flight.class)
+					.distanceTo(cityLatitude, cityLongitude);
 			exchange.getIn().getBody(Flight.class).setDistance(distance / 1000);
 			return distance <= configuration.getDistance();
 		})
@@ -85,7 +95,7 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
 		.setHeader(Exchange.HTTP_QUERY, simple("flight=${body.code}"))
 		.setBody(constant(""))
-		.to("http://data-live.flightradar24.com/clickhandler")
+		.to("http://localhost:9090/flights")
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
 		.setBody().jsonpath("$.address")
@@ -97,25 +107,6 @@ public class MainRouteBuilder extends RouteBuilder {
 	
 	public static String getBatchId() {
 		return UUID.randomUUID().toString();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Flight> extractFlights(Map<String, Object> map) {
-		final List<Flight> flights = new ArrayList<Flight>();
-		for (var entry : map.entrySet()) {
-			var value = entry.getValue();
-			if (!(value instanceof List<?>)) {
-				continue;
-			}
-			var values = (List<Object>) value;
-			var code = entry.getKey();
-			double latitude = (Double) values.get(1);
-			double longitude = (Double) values.get(2);
-			var number = (String) values.get(7);
-			var flight = new Flight(code, number, latitude, longitude);
-			flights.add(flight);
-		}
-		return flights;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -139,19 +130,32 @@ public class MainRouteBuilder extends RouteBuilder {
 		return oldExchange;
 	}
 	
-	private static double distanceBetween(double sourceLatitude,
-			double sourceLongitute, double destinationLatitude,
-			double destinationLongitude) {
-		double R = 6378137;
-		double dLat = (destinationLatitude - sourceLatitude) * Math.PI / 180;
-		double dLng = (destinationLongitude - sourceLongitute) * Math.PI / 180;
-		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-				+ Math.cos(sourceLatitude * Math.PI / 180)
-				* Math.cos(destinationLatitude * Math.PI / 180)
-				* Math.sin(dLng / 2) * Math.sin(dLng / 2);
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		double d = R * c;
-		return Math.round(d);
+	public int getBackendPort() {
+		return configuration.getBackendPort();
+	}
+	
+	public Double getCityLatitude() {
+		return cityLatitude;
+	}
+	
+	public Double getCityLongitude() {
+		return cityLongitude;
+	}
+	
+	public Double getNorthLatitude() {
+		return cityLatitude + 1;
+	}
+
+	public Double getSouthLatitude() {
+		return cityLatitude - 1;
+	}
+	
+	public Double getWestLongitude() {
+		return cityLongitude - 1;
+	}
+
+	public Double getEastLongitude() {
+		return cityLongitude + 1;
 	}
 
 }

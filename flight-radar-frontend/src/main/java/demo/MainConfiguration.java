@@ -15,8 +15,11 @@ public class MainConfiguration {
 	@Value("${distance}")
 	private double distance;
 	
-	@Value("${port}")
-	private int port;
+	@Value("${frontendPort}")
+	private int frontendPort;
+	
+	@Value("${backendPort}")
+	private int backendPort;
 	
 	public String getCity() {
 		return city;
@@ -30,7 +33,11 @@ public class MainConfiguration {
 		return 1000 * distance;
 	}
 	
-	public int getPort() {
-		return port;
+	public int getFrontendPort() {
+		return frontendPort;
+	}
+	
+	public int getBackendPort() {
+		return backendPort;
 	}
 }
