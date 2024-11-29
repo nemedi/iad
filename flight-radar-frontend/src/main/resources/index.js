@@ -1,6 +1,6 @@
-function loadFlights(data) {
+function loadFlights(data, element) {
 	const flights = JSON.parse(data);
-	document.getElementById('out').innerHTML =
+	element.innerHTML =
 		`<table border="0" cellspacing="0" cellpadding="5">
 			<tr>
 				<th align="right"><b>No.</b></th>
@@ -9,7 +9,6 @@ function loadFlights(data) {
 				<th align="left"><b>To</b></th>
 				<th align="left"><b>Airline</b></th>
 				<th align="left"><b>Aircraft</b></th>
-				<th align="right"><b>Distance</b></th>
 			</tr>`
 		+ flights.map((flight, index) =>
 			`<tr>
@@ -19,22 +18,23 @@ function loadFlights(data) {
 				<td align="left">${flight.to}</td>
 				<td align="left">${flight.airline}</td>
 				<td align="left">${flight.aircraft}</td>
-				<td align="right">${flight.distance}</td>
 			</tr>`
 		).join('')
 		+ `</table>`;
 }
 window.onload = () => {
-	var socket = new WebSocket(`ws://${location.host}/flights`)
-	socket.onmessage = function(message) {
+	const element = document.getElementById('out');
+	element.innerHTML = '<h2>Loading data...</h2>';
+	var socket = new WebSocket(`ws://${location.host}/flights`);
+	socket.onmessage = (message) => {
 		if (message.data instanceof Blob) {
 			var reader = new FileReader();
 			reader.addEventListener('loadend', (e) => {
-				loadFlights(e.srcElement.result);
+				loadFlights(e.srcElement.result, element);
 			});
 			reader.readAsText(message.data);
 		} else {
-			loadFlights(message.data);
+			loadFlights(message.data, element);
 		}
-	}
-});
+	};
+};

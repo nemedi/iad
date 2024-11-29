@@ -1,6 +1,7 @@
 package demo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +13,8 @@ import org.apache.camel.component.websocket.WebsocketComponent;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.jayway.jsonpath.JsonPath;
 
 @Service
 public class MainRouteBuilder extends RouteBuilder {
@@ -61,15 +64,29 @@ public class MainRouteBuilder extends RouteBuilder {
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
 		.setHeader("id").method(MainRouteBuilder.class, "getBatchId")
-		.bean(Flight.class, "extractFlights")
 		.split().body()
-		.filter(exchange -> {
-			var distance = exchange.getIn().getBody(Flight.class)
-					.distanceTo(cityLatitude, cityLongitude);
-			exchange.getIn().getBody(Flight.class).setDistance(distance / 1000);
-			return distance <= configuration.getDistance();
+		.setBody(exchange -> {
+			var body = exchange.getIn().getBody(Map.class);
+			var code = (String) JsonPath.read(body, "$.id");
+			var number = (String) JsonPath.read(body, "$.flight");
+			var latitude = (Double) JsonPath.read(body, "$.latitude");
+			var longitude = (Double) JsonPath.read(body, "$.longitude");
+			return new Flight(code, number, latitude, longitude);
 		})
-		.enrich("direct:flight", (oldExchange, newExchange) -> mergeFileDetails(oldExchange, newExchange))
+		.filter(exchange ->
+			exchange.getIn().getBody(Flight.class)
+				.distanceTo(cityLatitude, cityLongitude) <= configuration.getDistance()
+		)
+		.enrich("direct:flight", (oldExchange, newExchange) -> {
+			var body = newExchange.getIn().getBody(Map.class);
+			var airline = (String) body.get("flight.airline");
+			var aircraft = (String) body.get("flight.aircraft");
+			var from = (String) body.get("flight.from");
+			var to = (String) body.get("flight.to");
+			var status = (String) body.get("flight.status");
+			oldExchange.getIn().getBody(Flight.class).setDetails(airline, aircraft, from, to, status);
+			return oldExchange;
+		})
 		.resequence(simple("${body.distance}"))
 		.aggregate((AggregationStrategy) (oldExchange, newExchange) -> {
 			var flight = newExchange.getIn().getBody(Flight.class);
@@ -93,41 +110,37 @@ public class MainRouteBuilder extends RouteBuilder {
 		from("direct:flight")
 		.removeHeaders("*")
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
-		.setHeader(Exchange.HTTP_QUERY, simple("flight=${body.code}"))
+		.setHeader("code").simple("${body.code}")
 		.setBody(constant(""))
-		.to("http://localhost:9090/flights")
+		.toD("http://localhost:9090/flights/${header.code}")
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
-		.setBody().jsonpath("$.address")
-		.setBody(exchange -> {
-			Map<String, Object> address = exchange.getIn().getBody(Map.class);
-			return new String[] {(String) address.get("county"), (String) address.get("country")};
+		.process(exchange -> {
+			var body = exchange.getIn().getBody(Map.class);
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put("flight.airline", "$.airline.name");
+			properties.put("flight.aircraft", "$.aircraft.model.text");
+			properties.put("flight.from", "$.airport.origin.name");
+			properties.put("flight.to", "$.airport.destination.name");
+			properties.put("flight.status", "$.status.text");
+			for (var entry : properties.entrySet()) {
+				String value = null;
+				try {
+					value = JsonPath.read(body, entry.getValue());
+					entry.setValue(value);
+				} catch (Throwable t) {
+					entry.setValue("Unknown");
+				}
+				if (entry.getValue() == null) {
+					entry.setValue("Unknown");
+				}
+			}
+			exchange.getIn().setBody(properties);
 		});
 	}
 	
 	public static String getBatchId() {
 		return UUID.randomUUID().toString();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static Exchange mergeFileDetails(Exchange oldExchange, Exchange newExchange) {
-		var flight = oldExchange.getIn().getBody(Flight.class);
-		var map = newExchange.getIn().getBody(Map.class);
-		var airlineMap = (Map<String, Object>) map.get("airline");
-		var airline = (String) airlineMap.get("name");
-		flight.setAirline(airline);
-		var aircraftMap = (Map<String, Object>) map.get("aircraft");
-		var aircraftModelMap = (Map<String, Object>) aircraftMap.get("model");
-		var aircfrat = (String) aircraftModelMap.get("text");
-		flight.setAircraft(aircfrat);
-		var airportMap = (Map<String, Object>) map.get("airport");
-		var airportOriginMap = (Map<String, Object>) airportMap.get("origin");
-		var from = (String) airportOriginMap.get("name");
-		flight.setFrom(from);
-		var airportDestinationMap = (Map<String, Object>) airportMap.get("destination");
-		var to = (String) airportDestinationMap.get("name");
-		flight.setTo(to);
-		return oldExchange;
 	}
 	
 	public int getBackendPort() {

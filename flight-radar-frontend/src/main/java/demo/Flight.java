@@ -1,12 +1,12 @@
 package demo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Flight {
 
+	@JsonIgnore
 	private String code;
+	
 	private String number;
 	private double latitude;
 	private double longitude;
@@ -14,9 +14,12 @@ public class Flight {
 	private String aircraft;
 	private String from;
 	private String to;
+	private String status;
+	
+	@JsonIgnore
 	private double distance;
 
-	private Flight(String code, String number, double latitude, double longitude) {
+	public Flight(String code, String number, double latitude, double longitude) {
 		this.code = code;
 		this.number = number;
 		this.latitude = latitude;
@@ -43,32 +46,20 @@ public class Flight {
 		return airline;
 	}
 
-	public void setAirline(String airline) {
-		this.airline = airline;
-	}
-
 	public String getAircraft() {
 		return aircraft;
-	}
-
-	public void setAircraft(String aircraft) {
-		this.aircraft = aircraft;
 	}
 
 	public String getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
-	}
-
 	public String getTo() {
 		return to;
 	}
-
-	public void setTo(String to) {
-		this.to = to;
+	
+	public String getStatus() {
+		return status;
 	}
 	
 	public double getDistance() {
@@ -79,19 +70,6 @@ public class Flight {
 		this.distance = distance;
 	}
 	
-	public static List<Flight> extractFlights(List<Map<String, Object>> body) {
-		final List<Flight> flights = new ArrayList<Flight>();
-		for (var item : body) {
-			var code = (String) item.get("id"); 
-			var latitude = (Double) item.get("latitude");
-			var longitude = (Double) item.get("longitude");
-			var number = (String) item.get("flight");
-			var flight = new Flight(code, number, latitude, longitude);
-			flights.add(flight);
-		}
-		return flights;
-	}
-
 	public double distanceTo(double latitude, double longitude) {
 		double R = 6378137;
 		double dLat = (latitude - this.latitude) * Math.PI / 180;
@@ -102,6 +80,15 @@ public class Flight {
 				* Math.sin(dLng / 2) * Math.sin(dLng / 2);
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		double d = R * c;
-		return Math.round(d);
+		this.distance = Math.round(d / 1000);
+		return distance;
+	}
+	
+	public void setDetails(String airline, String aircraft, String from, String to, String status) {
+		this.airline = airline;
+		this.aircraft = aircraft;
+		this.from = from;
+		this.to = to;
+		this.status = status;
 	}
 }
