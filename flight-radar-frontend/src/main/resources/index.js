@@ -24,7 +24,7 @@ function loadFlights(data, element) {
 }
 window.onload = () => {
 	const element = document.getElementById('out');
-	element.innerHTML = '<h2>Loading data...</h2>';
+	element.innerHTML = '<h3>Loading data...</h3>';
 	var socket = new WebSocket(`ws://${location.host}/flights`);
 	socket.onmessage = (message) => {
 		if (message.data instanceof Blob) {
