@@ -1,0 +1,2 @@
+subject: "Ce-a mai zis Guru"
+body: "Draga {{first_name}} {{last_name}},\nUite ce-a mai zis Kremlin Georgeskov:\n\n{{phrases}}\n\nTu ce parere ai?"

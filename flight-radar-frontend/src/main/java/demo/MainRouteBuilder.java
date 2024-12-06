@@ -108,11 +108,10 @@ public class MainRouteBuilder extends RouteBuilder {
 		.to("websocket:flights?sendToAll=true");
 		
 		from("direct:flight")
-		.removeHeaders("*")
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
 		.setHeader("code").simple("${body.code}")
 		.setBody(constant(""))
-		.toD("http://localhost:9090/flights/${header.code}")
+		.toD("http://localhost:${header.backendPort}/flights/${header.code}")
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
 		.process(exchange -> {
