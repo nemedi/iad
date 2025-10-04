@@ -21,8 +21,4 @@ public class District {
 		return inhabitants;
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("%s,%d", name, inhabitants);
-	}
 }

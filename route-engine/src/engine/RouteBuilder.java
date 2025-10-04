@@ -75,5 +75,10 @@ public class RouteBuilder {
 		steps.add(new ResequenceStep(comparator));
 		return this;
 	}
-	
+
+	public RouteBuilder process(Consumer<Exchange> consumer) {
+		steps.add(new ProcessStep(consumer));
+		return this;
+	}
+
 }
