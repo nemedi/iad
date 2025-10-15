@@ -25,7 +25,7 @@ public class ResequencerRouteBuilder extends RouteBuilder {
 		from("direct:resequencer")
 		.idempotentConsumer(simple("${body}"),
 				memoryIdempotentRepository(100))
-				.resequence(simple("${body}"))
+		.resequence(simple("${body}"))
 		.to("stream:out");
 	}
 

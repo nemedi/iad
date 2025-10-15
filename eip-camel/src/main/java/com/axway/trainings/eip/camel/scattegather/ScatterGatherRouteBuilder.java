@@ -28,7 +28,6 @@ public class ScatterGatherRouteBuilder extends RouteBuilder {
 		from("direct:aggregate")
 		.aggregate(constant(true), new CombineAggregationStrategy())
 		.completionSize(4)
-		.bean(Contact.class, "convertToString")
 		.to("stream:out");
 
 	}

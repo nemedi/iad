@@ -12,18 +12,12 @@ public class AggregationRouteBuilder extends RouteBuilder {
     	from(TestFileResourceUtils.getFileBaseUti(AggregationRouteBuilder.class)
     			+ "?fileName=cities.csv&noop=true")
     	.unmarshal().bindy(BindyType.Csv, City.class)
-    	.setHeader("size", simple("${body.size}"))
     	.split().body()
     	.setHeader("district", simple("${body.district}"))
     	.aggregate(header("district"), new DistrictAggregationStrategy())
-    	.completionPredicate(exchange -> exchange.getIn().getHeader("size", Integer.class) == 0)
-    	.process(e -> {
-    		District district = e.getIn().getBody(District.class);
-    		System.out.println(district);
-    	})
+    	.completionTimeout(1000)
     	.aggregate(constant(true), new DistrictsAggregationStrategy())
     	.completionTimeout(1000)
-    	.unmarshal().bindy(BindyType.Csv, City.class)    	
     	.marshal(new JaxbDataFormat(
     			JAXBContext.newInstance(District.class, DistrictCollection.class)))
     	.to(TestFileResourceUtils.getFileBaseUti(AggregationRouteBuilder.class)

@@ -22,12 +22,14 @@ public class Program {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		from("csv:runtime/input")
+		.process(exchange -> {
+			exchange.setHeader("id", exchange.getId());
+		})
+		.split()
+		.log("ID: ${header.id}")
 		.convertBodyTo(City.class)
 		.filter(exchange -> exchange.getBody(City.class).getDistrict() != null)
-		.process(exchange -> {
-			City city = exchange.getBody(City.class);
-			System.out.println(String.format("City: %s, %s, %d", city.getName(), city.getDistrict(), city.getInhabitants()));
-		})
+		.log("City: ${body.name}, ${body.district}, ${body.inhabitants}")
 		.aggregate(exchange -> exchange.getBody(City.class).getDistrict(),
 				(oldExchange, newExchange) -> {
 			City city = newExchange.getBody(City.class);
@@ -42,10 +44,7 @@ public class Program {
 		.resequence((firstExchange, secondExchange) ->
 			firstExchange.getBody(District.class).getName()
 				.compareTo(secondExchange.getBody(District.class).getName()))
-		.process(exchange -> {
-			District district = exchange.getBody(District.class);
-			System.out.println(String.format("District: %s, %d", district.getName(), district.getInhabitants()));
-		})
+		.log("District: ${body.name}, ${body.inhabitants}")
 		.convertBodyTo(String.class)
 		.aggregate(exchange -> true, (oldExchange, newExchange) -> {
 			String line = newExchange.getBody(String.class);

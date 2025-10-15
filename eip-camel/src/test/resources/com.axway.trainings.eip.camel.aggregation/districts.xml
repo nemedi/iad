@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <districts>
+    <district name="Bucuresti" inhabitants="1921751"/>
+    <district name="Ialomita" inhabitants="119553"/>
+    <district name="Teleorman" inhabitants="141936"/>
+    <district name="Iasi" inhabitants="89319"/>
+    <district name="Ilfov" inhabitants="30132"/>
+    <district name="Arges" inhabitants="297936"/>
+    <district name="Vaslui" inhabitants="153263"/>
+    <district name="Bistrita-Nasaud" inhabitants="115567"/>
+    <district name="Satu Mare" inhabitants="40666"/>
+    <district name="Mures" inhabitants="288414"/>
+    <district name="Cluj" inhabitants="426121"/>
+    <district name="Dolj" inhabitants="374943"/>
+    <district name="Covasna" inhabitants="115614"/>
+    <district name="Neamt" inhabitants="206527"/>
+    <district name="Buzau" inhabitants="180800"/>
+    <district name="Dambovita" inhabitants="164187"/>
+    <district name="Botosani" inhabitants="167104"/>
+    <district name="Salaj" inhabitants="101109"/>
+    <district name="Vrancea" inhabitants="143121"/>
+    <district name="Olt" inhabitants="192368"/>
+    <district name="Brasov" inhabitants="417212"/>
+    <district name="Arad" inhabitants="235886"/>
+    <district name="Timis" inhabitants="408432"/>
+    <district name="Giurgiu" inhabitants="96548"/>
+    <district name="Calarasi" inhabitants="124960"/>
+    <district name="Constanta" inhabitants="463242"/>
+    <district name="Maramures" inhabitants="269720"/>
+    <district name="Hunedoara" inhabitants="255996"/>
+    <district name="Mehedinti" inhabitants="144776"/>
+    <district name="Caras-Severin" inhabitants="194314"/>
+    <district name="Prahova" inhabitants="428049"/>
+    <district name="Suceava" inhabitants="228246"/>
     <district name="Harghita" inhabitants="149751"/>
+    <district name="Tulcea" inhabitants="121571"/>
+    <district name="Valcea" inhabitants="165665"/>
+    <district name="Galati" inhabitants="352566"/>
+    <district name="Alba" inhabitants="229372"/>
+    <district name="Bihor" inhabitants="277353"/>
+    <district name="Bacau" inhabitants="335155"/>
+    <district name="Braila" inhabitants="241942"/>
+    <district name="Sibiu" inhabitants="283082"/>
+    <district name="Gorj" inhabitants="151905"/>
 </districts>

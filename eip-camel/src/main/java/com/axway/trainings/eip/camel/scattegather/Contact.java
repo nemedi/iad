@@ -40,8 +40,4 @@ public class Contact {
 				email);
 	}
 	
-	public static String convertToString(Contact contact) {
-		return contact.toString();
-	}
-
 }

@@ -37,15 +37,17 @@ public class RouteBuilder {
 	public void to(Consumer<Exchange> consumer) {
 		steps.add(new ToStep(consumer));
 		EXECUTOR_SERVICE.submit(() -> {
-			while (true) {
+			next: while (true) {
 				try {
 					List<Exchange> exchanges = emptyList();
 					for (Step step : steps) {
 						exchanges = step.process(exchanges);
+						if (exchanges.isEmpty()) {
+							continue next;
+						}
 					}
-					sleep(1000);
+					sleep(500);
 				} catch (Throwable e) {
-					e.printStackTrace();
 				}
 			}
 		});
@@ -53,6 +55,11 @@ public class RouteBuilder {
 	
 	public void to(String endpoint) {
 		to(Registry.getInstance().createProducer(endpoint));
+	}
+	
+	public RouteBuilder split() {
+		steps.add(new SplitStep());
+		return this;
 	}
 	
 	public RouteBuilder filter(Predicate<Exchange> predicate) {
@@ -78,6 +85,11 @@ public class RouteBuilder {
 
 	public RouteBuilder process(Consumer<Exchange> consumer) {
 		steps.add(new ProcessStep(consumer));
+		return this;
+	}
+	
+	public RouteBuilder log(String message) {
+		steps.add(new LogStep(message));
 		return this;
 	}
 

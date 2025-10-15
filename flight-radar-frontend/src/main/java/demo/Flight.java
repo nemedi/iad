@@ -7,17 +7,22 @@ public class Flight {
 	@JsonIgnore
 	private String code;
 	
-	private String number;
+	@JsonIgnore
 	private double latitude;
+	
+	@JsonIgnore
 	private double longitude;
+	
+	@JsonIgnore
+	private double distance;
+	
+	private String number;
 	private String airline;
 	private String aircraft;
 	private String from;
 	private String to;
 	private String status;
 	
-	@JsonIgnore
-	private double distance;
 
 	public Flight(String code, String number, double latitude, double longitude) {
 		this.code = code;

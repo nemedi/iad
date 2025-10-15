@@ -10,7 +10,7 @@ public class MyFirstRouteBuilder extends RouteBuilder {
 		from("direct:start")
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
 		.setBody(constant(""))
-		.to("http://www.axway.com")
+		.to("https://www.axway.com?followRedirects=true")
 		.convertBodyTo(String.class)
 		.process(new LinksExtractorProcessor())
 		.split(body())

@@ -27,7 +27,6 @@ public class CombineAggregationStrategy implements AggregationStrategy {
 							contact.setEmail(parts[1].trim());
 						}
 					}
-					oldExchange.getIn().setBody(contact);
 				}
 			}
 			return oldExchange;

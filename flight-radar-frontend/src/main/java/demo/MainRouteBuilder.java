@@ -18,13 +18,13 @@ import com.jayway.jsonpath.JsonPath;
 
 @Service
 public class MainRouteBuilder extends RouteBuilder {
-	
+
 	@Autowired
 	private MainConfiguration configuration;
 	
 	private Double cityLatitude;
 	private Double cityLongitude;
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void configure() throws Exception {
@@ -34,18 +34,18 @@ public class MainRouteBuilder extends RouteBuilder {
 		onException(Exception.class).log("${body}");
 		fromF("timer:poll?fixedRate=true&delay=0&period=%d", configuration.getInterval())
 		.choice()
-			.when(exchange -> cityLatitude == null || cityLongitude == null)
-			.setBody(constant(""))
-			.setHeader(Exchange.HTTP_METHOD, constant("GET"))
-			.toF("https://nominatim.openstreetmap.org/search?city=%s&format=json", configuration.getCity())
-			.convertBodyTo(String.class)
-			.unmarshal().json(JsonLibrary.Jackson)
-			.process(exchange -> {
-				var list = exchange.getIn().getBody(List.class);
-				var map = (Map<String, Object>) list.get(0);
-				cityLatitude = Double.parseDouble((String) map.get("lat"));
-				cityLongitude = Double.parseDouble((String) map.get("lon"));
-			})
+		.when(exchange -> cityLatitude == null || cityLongitude == null)
+		.setBody(constant(""))
+		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
+		.toF("https://nominatim.openstreetmap.org/search?city=%s&format=json", configuration.getCity())
+		.convertBodyTo(String.class)
+		.unmarshal().json(JsonLibrary.Jackson)
+		.process(exchange -> {
+			var list = exchange.getIn().getBody(List.class);
+			var map = (Map<String, Object>) list.get(0);
+			cityLatitude = Double.parseDouble((String) map.get("lat"));
+			cityLongitude = Double.parseDouble((String) map.get("lon"));
+		})
 		.end()
 		.setBody(constant(""))
 		.setHeader(Exchange.HTTP_METHOD, constant("GET"))
@@ -55,7 +55,7 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader("southLatitude").method(getClass(), "getSouthLatitude")
 		.setHeader("westLongitude").method(getClass(), "getWestLongitude")
 		.setHeader("eastLongitude").method(getClass(), "getEastLongitude")
-		.setHeader("backendPort").method(getClass(), "getBackendPort")
+		.setHeader("backendPort").constant(configuration.getBackendPort())
 		.setHeader(Exchange.HTTP_QUERY, simple("bounds=${header.northLatitude}"
 				+ ",${header.westLongitude}"
 				+ ",${header.southLatitude}"
@@ -138,14 +138,6 @@ public class MainRouteBuilder extends RouteBuilder {
 		});
 	}
 	
-	public static String getBatchId() {
-		return UUID.randomUUID().toString();
-	}
-	
-	public int getBackendPort() {
-		return configuration.getBackendPort();
-	}
-	
 	public Double getCityLatitude() {
 		return cityLatitude;
 	}
@@ -153,7 +145,7 @@ public class MainRouteBuilder extends RouteBuilder {
 	public Double getCityLongitude() {
 		return cityLongitude;
 	}
-	
+
 	public Double getNorthLatitude() {
 		return cityLatitude + 1;
 	}
@@ -170,4 +162,7 @@ public class MainRouteBuilder extends RouteBuilder {
 		return cityLongitude + 1;
 	}
 
+	public static String getBatchId() {
+		return UUID.randomUUID().toString();
+	}
 }
