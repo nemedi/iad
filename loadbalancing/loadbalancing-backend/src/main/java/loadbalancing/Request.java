@@ -9,19 +9,20 @@ public class Request {
 	private String transformation;
 	private String payload;
 	
-	private Request(String transformation, String payload) {
+	public Request(String transformation, String payload) {
 		this.transformation = transformation;
 		this.payload = payload;
 	}
-	
+
 	public String getTransformation() {
 		return transformation;
 	}
-	
+
 	public String getPayload() {
 		return payload;
 	}
 	
+
 	@SuppressWarnings("unchecked")
 	public static Request extractRequest(Exchange exchange) {
 		Map<String, Object> body = exchange.getIn().getBody(Map.class);

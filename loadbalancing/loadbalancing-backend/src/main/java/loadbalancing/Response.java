@@ -14,45 +14,37 @@ public class Response {
 	
 	@JsonProperty
 	private String fileName;
-
-	@JsonProperty
-	private long timespan;
 	
 	@JsonProperty
 	private String payload;
 	
-	private Response(String serverId,
-			String transformation,
-			String fileName,
-			long timespan,
-			String payload) {
+	@JsonProperty
+	private long timespan;
+
+	public Response(String serverId, String transformation, String fileName, long timespan, String payload) {
 		this.serverId = serverId;
-		this.timespan = timespan;
 		this.transformation = transformation;
 		this.fileName = fileName;
+		this.timespan = timespan;
 		this.payload = payload;
 	}
 
 	public String getServerId() {
 		return serverId;
 	}
-	
+
+	public String getTransformation() {
+		return transformation;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
 	public long getTimespan() {
 		return timespan;
 	}
 	
-	public String getTransformation() {
-		return transformation;
-	}
-	
-	public String getFileName() {
-		return fileName;
-	}
-	
-	public String getPayload() {
-		return payload;
-	}
-
 	public static Response createResponse(Exchange exchange) {
 		String serverId = exchange.getIn().getHeader("serverId", String.class);
 		String transformation = exchange.getIn().getHeader("transformation", String.class);
@@ -61,4 +53,5 @@ public class Response {
 		String payload = exchange.getIn().getBody(String.class);
 		return new Response(serverId, transformation, fileName, timespan, payload);
 	}
+	
 }

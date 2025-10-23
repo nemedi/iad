@@ -8,23 +8,24 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class MainRouteBuilder extends RouteBuilder {
-	
-	private int backendPort;
+
+	private int backendPont;
 	private String serverId;
 	private int frontendPort;
 
-	public MainRouteBuilder(int backendPort, String serverId, int frontendPort) {
-		this.backendPort = backendPort;
+	public MainRouteBuilder(int backendPont, String serverId, int frontendPort) {
+		this.backendPont = backendPont;
 		this.serverId = serverId;
 		this.frontendPort = frontendPort;
 	}
 
 	@Override
 	public void configure() throws Exception {
+		
 		onException(Throwable.class)
 		.log("${body}");
 		
-		fromF("mina:tcp://0.0.0.0:%d", backendPort)
+		fromF("mina:tcp://0.0.0.0:%d", backendPont)
 		.convertBodyTo(String.class)
 		.unmarshal().json(JsonLibrary.Jackson)
 		.bean(Request.class, "extractRequest")
@@ -35,27 +36,28 @@ public class MainRouteBuilder extends RouteBuilder {
 		.setHeader("timestamp").method(this, "getTimestamp")
 		.recipientList().simple("xslt:file:./runtime/${header.transformation}.xsl")
 		.setHeader("timespan").method(this, "getTimespan")
-		.setHeader("fileName").method(this, "getFileName")
 		.removeHeader("timestamp")
+		.setHeader("fileName").method(this, "getFileName")
 		.bean(Response.class, "createResponse")
 		.removeHeader("transformation")
 		.setHeader("remoteEndpoint").method(this, "getRemoteEndpoint")
 		.log("Sending '${header.fileName}' to frontend.")
 		.marshal().json(JsonLibrary.Jackson)
 		.toD("mina:tcp://${header.remoteEndpoint}");
+		
 	}
-	
+
 	protected long getTimestamp() {
 		return new Date().getTime();
+	}
+	
+	protected String getFileName() {
+		return UUID.randomUUID().toString() + ".xml";
 	}
 	
 	protected long getTimespan(Exchange exchange) {
 		long timestamp = exchange.getIn().getHeader("timestamp", long.class);
 		return new Date().getTime() - timestamp;
-	}
-	
-	protected String getFileName() {
-		return UUID.randomUUID().toString() + ".xml";
 	}
 	
 	protected String getRemoteEndpoint(Exchange exchange) {

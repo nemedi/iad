@@ -1,6 +1,5 @@
 import express from 'express';
-import {fetchFromRadar, fetchFlight} from 'flightradar24-client';
-import airlines from 'airline-codes';
+import { fetchFromRadar } from 'flightradar24-client';
 import puppeteer from 'puppeteer';
 
 const PORT = process.env.PORT || 9090;

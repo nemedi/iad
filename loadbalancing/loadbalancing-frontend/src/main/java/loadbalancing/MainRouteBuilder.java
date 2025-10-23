@@ -7,7 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class MainRouteBuilder extends RouteBuilder {
-
+	
 	private int port;
 	private String[] backends;
 
@@ -27,6 +27,7 @@ public class MainRouteBuilder extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
+		
 		onException(Throwable.class)
 		.log("${body}");
 		

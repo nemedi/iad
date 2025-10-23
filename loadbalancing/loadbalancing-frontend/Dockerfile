@@ -1,5 +1,5 @@
 FROM alpine
-RUN apk --no-cache add openjdk17 mc net-tools iputils-ping
+RUN apk --no-cache add openjdk21 mc net-tools iputils-ping
 RUN mkdir -p /usr/share/loadbalancing/runtime
 ADD ./lib/* /usr/share/loadbalancing/
 ADD ./target/loadbalancing-frontend-0.0.1-SNAPSHOT.jar /usr/share/loadbalancing/loadbalancing.jar

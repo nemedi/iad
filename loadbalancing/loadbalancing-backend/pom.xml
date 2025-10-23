@@ -6,12 +6,11 @@
 	<artifactId>loadbalancing-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<camel.version>4.8.0</camel.version>
-		<slf4j.version>2.0.16</slf4j.version>
-		<java.version>17</java.version>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<camel.version>4.15.0</camel.version>
+		<java.version>21</java.version>
+		<slf4j.version>2.0.17</slf4j.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -60,7 +59,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.14.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -69,7 +68,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.6.1</version>
+				<version>3.9.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -85,7 +84,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -98,7 +97,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<id>docker-build</id>
@@ -117,13 +116,14 @@
 								<argument>
 									JAR_FILE=target/${project.artifactId}-${project.version}-${jar.suffix}.jar</argument>
 								<argument>-t</argument>
-								<argument>${project.groupId}/${project.artifactId}:latest</argument>
+								<argument>
+									${project.groupId}/${project.artifactId}:latest</argument>
 								<argument>.</argument>
 							</arguments>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
 </project>
